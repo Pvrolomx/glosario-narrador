@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Glosario Narrador — Expat Advisor MX</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0e0f;
+    --surface: #1a1a1b;
+    --border: #2a2a2c;
+    --accent: #c8a96e;
+    --accent-dim: #8a7249;
+    --text: #f0ede8;
+    --text-muted: #888580;
+    --text-dim: #555350;
+    --mono: 'DM Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+    --radius: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* PIN SCREEN */
+  #pin-screen {
+    width: 100%;
+    max-width: 360px;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .logo {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 2.5rem;
+  }
+
+  .pin-title {
+    font-size: 22px;
+    font-weight: 300;
+    color: var(--text);
+    margin-bottom: 0.4rem;
+    letter-spacing: -0.02em;
+  }
+
+  .pin-sub {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+  }
+
+  .pin-dots {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-bottom: 2rem;
+  }
+
+  .dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    transition: all 0.15s ease;
+  }
+
+  .dot.filled {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .dot.error {
+    background: #c0392b;
+    border-color: #c0392b;
+  }
+
+  .numpad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    max-width: 240px;
+    margin: 0 auto;
+  }
+
+  .key {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    font-family: var(--mono);
+    font-size: 18px;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.1s;
+    user-select: none;
+  }
+
+  .key:hover { background: #252527; border-color: #3a3a3c; }
+  .key:active { transform: scale(0.94); }
+
+  .key.del {
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .key.zero { grid-column: 2; }
+
+  .pin-error {
+    font-size: 12px;
+    color: #c0392b;
+    margin-top: 1rem;
+    height: 16px;
+    transition: opacity 0.3s;
+  }
+
+  /* MAIN APP */
+  #app {
+    display: none;
+    width: 100%;
+    max-width: 580px;
+    padding: 2rem 1.5rem;
+    min-height: 100vh;
+  }
+
+  .app-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    padding-bottom: 1.2rem;
+    border-bottom: 0.5px solid var(--border);
+  }
+
+  .app-title {
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+
+  .app-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 3px;
+    font-family: var(--mono);
+  }
+
+  .version-badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--accent);
+    border: 0.5px solid var(--accent-dim);
+    padding: 3px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.05em;
+  }
+
+  .list { display: flex; flex-direction: column; gap: 6px; }
+
+  .entry {
+    display: grid;
+    grid-template-columns: 1fr 40px 90px;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    transition: border-color 0.15s;
+    cursor: default;
+  }
+
+  .entry:hover { border-color: #3a3a3c; }
+
+  .entry-term {
+    font-size: 14px;
+    color: var(--text);
+    font-weight: 400;
+  }
+
+  .entry-note {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 2px;
+    font-family: var(--mono);
+  }
+
+  .arrow {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text-dim);
+    text-align: center;
+  }
+
+  .code-pill {
+    font-family: var(--mono);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--accent);
+    background: rgba(200, 169, 110, 0.08);
+    border: 0.5px solid rgba(200, 169, 110, 0.2);
+    padding: 4px 10px;
+    border-radius: 6px;
+    text-align: center;
+    letter-spacing: 0.05em;
+  }
+
+  .rule-bar {
+    margin: 1.2rem 0;
+    padding: 10px 14px;
+    background: rgba(200, 169, 110, 0.05);
+    border-left: 2px solid var(--accent-dim);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    font-size: 12px;
+    color: var(--text-muted);
+    font-family: var(--mono);
+    line-height: 1.5;
+  }
+
+  .add-section {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 0.5px solid var(--border);
+  }
+
+  .add-label {
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .add-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  input[type="text"] {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    padding: 10px 12px;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  input[type="text"]:focus { border-color: var(--accent-dim); }
+  input[type="text"]::placeholder { color: var(--text-dim); }
+
+  .btn-add {
+    width: 100%;
+    background: rgba(200, 169, 110, 0.1);
+    border: 0.5px solid var(--accent-dim);
+    border-radius: var(--radius);
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-top: 4px;
+    letter-spacing: 0.05em;
+  }
+
+  .btn-add:hover { background: rgba(200, 169, 110, 0.18); }
+  .btn-add:active { transform: scale(0.98); }
+
+  .count {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    text-align: right;
+    margin-top: 1rem;
+  }
+
+  @media (max-width: 480px) {
+    #app { padding: 1.5rem 1rem; }
+    .entry { grid-template-columns: 1fr 30px 80px; gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- PIN SCREEN -->
+<div id="pin-screen">
+  <div class="logo">Expat Advisor MX</div>
+  <div class="pin-title">Glosario Narrador</div>
+  <div class="pin-sub">Ingresa tu PIN para continuar</div>
+  <div class="pin-dots">
+    <div class="dot" id="d0"></div>
+    <div class="dot" id="d1"></div>
+    <div class="dot" id="d2"></div>
+    <div class="dot" id="d3"></div>
+  </div>
+  <div class="numpad">
+    <div class="key" onclick="pressKey('1')">1</div>
+    <div class="key" onclick="pressKey('2')">2</div>
+    <div class="key" onclick="pressKey('3')">3</div>
+    <div class="key" onclick="pressKey('4')">4</div>
+    <div class="key" onclick="pressKey('5')">5</div>
+    <div class="key" onclick="pressKey('6')">6</div>
+    <div class="key" onclick="pressKey('7')">7</div>
+    <div class="key" onclick="pressKey('8')">8</div>
+    <div class="key" onclick="pressKey('9')">9</div>
+    <div class="key del" onclick="deleteKey()">← del</div>
+    <div class="key zero" onclick="pressKey('0')">0</div>
+  </div>
+  <div class="pin-error" id="pin-error"></div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <div class="app-header">
+    <div>
+      <div class="app-title">Glosario narrador</div>
+      <div class="app-sub">expat advisor mx / colmena</div>
+    </div>
+    <div class="version-badge">v1.1</div>
+  </div>
+
+  <div class="list" id="glosario-list"></div>
+
+  <div class="rule-bar">
+    EA / GH / VC / SB / PI → siempre en mayúsculas<br>aunque el narrador los dicte en minúsculas
+  </div>
+
+  <div class="add-section">
+    <div class="add-label">+ Agregar código</div>
+    <div class="add-grid">
+      <input type="text" id="nuevo-termino" placeholder="Término real" />
+      <input type="text" id="nuevo-codigo" placeholder="Código" />
+    </div>
+    <input type="text" id="nueva-nota" placeholder="Nota (opcional)" style="margin-bottom:8px;" />
+    <button class="btn-add" onclick="agregarCodigo()">+ agregar</button>
+  </div>
+
+  <div class="count" id="contador"></div>
+</div>
+
+<script>
+const PIN = '1434';
+let entrada = '';
+
+const glosarioBase = [
+  { termino: 'prompt', codigo: 'PRT', nota: 'el narrador pone "Trump"' },
+  { termino: 'Claude', codigo: 'Clod', nota: 'evita "Claudia" / "cloud"' },
+  { termino: 'HO (handoff)', codigo: 'hache-o', nota: 'origen del código' },
+  { termino: 'expatadvisor', codigo: 'EA', nota: '' },
+  { termino: 'GitHub', codigo: 'GH', nota: '' },
+  { termino: 'Vercel', codigo: 'VC', nota: '' },
+  { termino: 'Supabase', codigo: 'SB', nota: 'su papá base' },
+  { termino: 'Raspberry Pi', codigo: 'PI', nota: '' },
+];
+
+let datos = JSON.parse(localStorage.getItem('glosario-rolo') || 'null') || glosarioBase;
+
+function pressKey(k) {
+  if (entrada.length >= 4) return;
+  entrada += k;
+  actualizarDots();
+  if (entrada.length === 4) verificarPin();
+}
+
+function deleteKey() {
+  entrada = entrada.slice(0, -1);
+  actualizarDots();
+  document.getElementById('pin-error').textContent = '';
+}
+
+function actualizarDots() {
+  for (let i = 0; i < 4; i++) {
+    const d = document.getElementById('d' + i);
+    d.classList.remove('filled', 'error');
+    if (i < entrada.length) d.classList.add('filled');
+  }
+}
+
+function verificarPin() {
+  if (entrada === PIN) {
+    document.getElementById('pin-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    renderLista();
+  } else {
+    for (let i = 0; i < 4; i++) {
+      const d = document.getElementById('d' + i);
+      d.classList.remove('filled');
+      d.classList.add('error');
+    }
+    document.getElementById('pin-error').textContent = 'PIN incorrecto';
+    setTimeout(() => {
+      entrada = '';
+      actualizarDots();
+      document.getElementById('pin-error').textContent = '';
+    }, 900);
+  }
+}
+
+function renderLista() {
+  const list = document.getElementById('glosario-list');
+  list.innerHTML = '';
+  datos.forEach(item => {
+    const el = document.createElement('div');
+    el.className = 'entry';
+    el.innerHTML = `
+      <div>
+        <div class="entry-term">${item.termino}</div>
+        ${item.nota ? `<div class="entry-note">${item.nota}</div>` : ''}
+      </div>
+      <div class="arrow">→</div>
+      <div class="code-pill">${item.codigo}</div>
+    `;
+    list.appendChild(el);
+  });
+  document.getElementById('contador').textContent = `${datos.length} códigos registrados`;
+}
+
+function agregarCodigo() {
+  const termino = document.getElementById('nuevo-termino').value.trim();
+  const codigo = document.getElementById('nuevo-codigo').value.trim().toUpperCase();
+  const nota = document.getElementById('nueva-nota').value.trim();
+  if (!termino || !codigo) return;
+  datos.push({ termino, codigo, nota });
+  localStorage.setItem('glosario-rolo', JSON.stringify(datos));
+  renderLista();
+  document.getElementById('nuevo-termino').value = '';
+  document.getElementById('nuevo-codigo').value = '';
+  document.getElementById('nueva-nota').value = '';
+}
+</script>
+</body>
+</html>
