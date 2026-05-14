@@ -7,347 +7,113 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0e0e0f;
-    --surface: #1a1a1b;
-    --border: #2a2a2c;
-    --accent: #c8a96e;
-    --accent-dim: #8a7249;
-    --text: #f0ede8;
-    --text-muted: #888580;
-    --text-dim: #555350;
-    --mono: 'DM Mono', monospace;
-    --sans: 'DM Sans', sans-serif;
-    --radius: 8px;
+    --bg: #0e0e0f; --surface: #1a1a1b; --surface2: #222224;
+    --border: #2a2a2c; --accent: #c8a96e; --accent-dim: #8a7249;
+    --accent-bg: rgba(200,169,110,0.08); --text: #f0ede8;
+    --text-muted: #888580; --text-dim: #555350;
+    --danger: #c0392b; --danger-bg: rgba(192,57,43,0.08);
+    --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif; --radius: 8px;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--sans);
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  /* PIN SCREEN */
-  #pin-screen {
-    width: 100%;
-    max-width: 360px;
-    padding: 2rem;
-    text-align: center;
-  }
-
-  .logo {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--accent);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    margin-bottom: 2.5rem;
-  }
-
-  .pin-title {
-    font-size: 22px;
-    font-weight: 300;
-    color: var(--text);
-    margin-bottom: 0.4rem;
-    letter-spacing: -0.02em;
-  }
-
-  .pin-sub {
-    font-size: 13px;
-    color: var(--text-muted);
-    margin-bottom: 2rem;
-  }
-
-  .pin-dots {
-    display: flex;
-    gap: 16px;
-    justify-content: center;
-    margin-bottom: 2rem;
-  }
-
-  .dot {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    border: 1.5px solid var(--border);
-    background: transparent;
-    transition: all 0.15s ease;
-  }
-
-  .dot.filled {
-    background: var(--accent);
-    border-color: var(--accent);
-  }
-
-  .dot.error {
-    background: #c0392b;
-    border-color: #c0392b;
-  }
-
-  .numpad {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    max-width: 240px;
-    margin: 0 auto;
-  }
-
-  .key {
-    background: var(--surface);
-    border: 0.5px solid var(--border);
-    border-radius: var(--radius);
-    padding: 18px;
-    font-family: var(--mono);
-    font-size: 18px;
-    color: var(--text);
-    cursor: pointer;
-    transition: all 0.1s;
-    user-select: none;
-  }
-
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+  #pin-screen { width: 100%; max-width: 360px; padding: 2rem; text-align: center; }
+  .logo { font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: .15em; text-transform: uppercase; margin-bottom: 2.5rem; }
+  .pin-title { font-size: 22px; font-weight: 300; margin-bottom: .4rem; letter-spacing: -.02em; }
+  .pin-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 2rem; }
+  .pin-dots { display: flex; gap: 16px; justify-content: center; margin-bottom: 2rem; }
+  .dot { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid var(--border); background: transparent; transition: all .15s; }
+  .dot.filled { background: var(--accent); border-color: var(--accent); }
+  .dot.error { background: var(--danger); border-color: var(--danger); }
+  .numpad { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; max-width: 240px; margin: 0 auto; }
+  .key { background: var(--surface); border: .5px solid var(--border); border-radius: var(--radius); padding: 18px; font-family: var(--mono); font-size: 18px; color: var(--text); cursor: pointer; transition: all .1s; user-select: none; }
   .key:hover { background: #252527; border-color: #3a3a3c; }
-  .key:active { transform: scale(0.94); }
-
-  .key.del {
-    font-family: var(--sans);
-    font-size: 13px;
-    color: var(--text-muted);
-  }
-
+  .key:active { transform: scale(.94); }
+  .key.del { font-family: var(--sans); font-size: 13px; color: var(--text-muted); }
   .key.zero { grid-column: 2; }
-
-  .pin-error {
-    font-size: 12px;
-    color: #c0392b;
-    margin-top: 1rem;
-    height: 16px;
-    transition: opacity 0.3s;
-  }
-
-  /* MAIN APP */
-  #app {
-    display: none;
-    width: 100%;
-    max-width: 580px;
-    padding: 2rem 1.5rem;
-    min-height: 100vh;
-  }
-
-  .app-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    margin-bottom: 2rem;
-    padding-bottom: 1.2rem;
-    border-bottom: 0.5px solid var(--border);
-  }
-
-  .app-title {
-    font-size: 20px;
-    font-weight: 400;
-    letter-spacing: -0.02em;
-    color: var(--text);
-  }
-
-  .app-sub {
-    font-size: 12px;
-    color: var(--text-muted);
-    margin-top: 3px;
-    font-family: var(--mono);
-  }
-
-  .version-badge {
-    font-family: var(--mono);
-    font-size: 10px;
-    color: var(--accent);
-    border: 0.5px solid var(--accent-dim);
-    padding: 3px 8px;
-    border-radius: 20px;
-    letter-spacing: 0.05em;
-  }
-
+  .pin-error { font-size: 12px; color: var(--danger); margin-top: 1rem; height: 16px; }
+  #app { display: none; width: 100%; max-width: 600px; padding: 2rem 1.5rem 3rem; min-height: 100vh; }
+  .app-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.5rem; padding-bottom: 1.2rem; border-bottom: .5px solid var(--border); }
+  .app-title { font-size: 20px; font-weight: 400; letter-spacing: -.02em; }
+  .app-sub { font-size: 12px; color: var(--text-muted); margin-top: 3px; font-family: var(--mono); }
+  .version-badge { font-family: var(--mono); font-size: 10px; color: var(--accent); border: .5px solid var(--accent-dim); padding: 3px 8px; border-radius: 20px; }
+  .export-bar { margin-bottom: 1rem; display: flex; gap: 8px; align-items: center; }
+  .btn-export { background: var(--accent-bg); border: .5px solid var(--accent-dim); border-radius: var(--radius); color: var(--accent); font-family: var(--mono); font-size: 12px; padding: 8px 14px; cursor: pointer; transition: all .15s; }
+  .btn-export:hover { background: rgba(200,169,110,.15); }
+  .copy-feedback { font-family: var(--mono); font-size: 11px; color: #4a9e6e; opacity: 0; transition: opacity .3s; }
+  .copy-feedback.show { opacity: 1; }
   .list { display: flex; flex-direction: column; gap: 6px; }
-
-  .entry {
-    display: grid;
-    grid-template-columns: 1fr 40px 90px;
-    align-items: center;
-    gap: 12px;
-    background: var(--surface);
-    border: 0.5px solid var(--border);
-    border-radius: var(--radius);
-    padding: 12px 16px;
-    transition: border-color 0.15s;
-    cursor: default;
-  }
-
+  .entry { display: grid; grid-template-columns: 1fr 30px 100px 64px; align-items: center; gap: 10px; background: var(--surface); border: .5px solid var(--border); border-radius: var(--radius); padding: 10px 14px; transition: border-color .15s; }
   .entry:hover { border-color: #3a3a3c; }
-
-  .entry-term {
-    font-size: 14px;
-    color: var(--text);
-    font-weight: 400;
-  }
-
-  .entry-note {
-    font-size: 11px;
-    color: var(--text-dim);
-    margin-top: 2px;
-    font-family: var(--mono);
-  }
-
-  .arrow {
-    font-family: var(--mono);
-    font-size: 13px;
-    color: var(--text-dim);
-    text-align: center;
-  }
-
-  .code-pill {
-    font-family: var(--mono);
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--accent);
-    background: rgba(200, 169, 110, 0.08);
-    border: 0.5px solid rgba(200, 169, 110, 0.2);
-    padding: 4px 10px;
-    border-radius: 6px;
-    text-align: center;
-    letter-spacing: 0.05em;
-  }
-
-  .rule-bar {
-    margin: 1.2rem 0;
-    padding: 10px 14px;
-    background: rgba(200, 169, 110, 0.05);
-    border-left: 2px solid var(--accent-dim);
-    border-radius: 0 var(--radius) var(--radius) 0;
-    font-size: 12px;
-    color: var(--text-muted);
-    font-family: var(--mono);
-    line-height: 1.5;
-  }
-
-  .add-section {
-    margin-top: 1.5rem;
-    padding-top: 1.5rem;
-    border-top: 0.5px solid var(--border);
-  }
-
-  .add-label {
-    font-size: 11px;
-    font-family: var(--mono);
-    color: var(--text-muted);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 10px;
-  }
-
-  .add-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-bottom: 8px;
-  }
-
-  input[type="text"] {
-    background: var(--surface);
-    border: 0.5px solid var(--border);
-    border-radius: var(--radius);
-    color: var(--text);
-    font-family: var(--sans);
-    font-size: 14px;
-    padding: 10px 12px;
-    width: 100%;
-    outline: none;
-    transition: border-color 0.15s;
-  }
-
+  .entry.editing { border-color: var(--accent-dim); background: #1e1e1f; }
+  .entry-term { font-size: 14px; font-weight: 400; }
+  .entry-note { font-size: 11px; color: var(--text-dim); margin-top: 2px; font-family: var(--mono); }
+  .arrow { font-family: var(--mono); font-size: 13px; color: var(--text-dim); text-align: center; }
+  .code-pill { font-family: var(--mono); font-size: 14px; font-weight: 500; color: var(--accent); background: var(--accent-bg); border: .5px solid rgba(200,169,110,.2); padding: 4px 8px; border-radius: 6px; text-align: center; }
+  .entry-actions { display: flex; gap: 6px; justify-content: flex-end; }
+  .btn-icon { background: none; border: .5px solid var(--border); border-radius: 6px; color: var(--text-muted); font-size: 13px; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .15s; }
+  .btn-icon:hover { border-color: var(--accent-dim); color: var(--accent); }
+  .btn-icon.del-btn:hover { border-color: var(--danger); color: var(--danger); background: var(--danger-bg); }
+  .edit-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; grid-column: 1 / -1; }
+  .edit-inputs input { background: var(--surface2); border: .5px solid var(--border); border-radius: 6px; color: var(--text); font-family: var(--sans); font-size: 13px; padding: 7px 10px; width: 100%; outline: none; transition: border-color .15s; }
+  .edit-inputs input:focus { border-color: var(--accent-dim); }
+  .edit-inputs input.full { grid-column: 1 / -1; }
+  .edit-actions { grid-column: 1 / -1; display: flex; gap: 6px; justify-content: flex-end; }
+  .btn-save { background: var(--accent-bg); border: .5px solid var(--accent-dim); border-radius: 6px; color: var(--accent); font-family: var(--mono); font-size: 12px; padding: 6px 14px; cursor: pointer; }
+  .btn-cancel { background: none; border: .5px solid var(--border); border-radius: 6px; color: var(--text-muted); font-family: var(--mono); font-size: 12px; padding: 6px 14px; cursor: pointer; }
+  .rule-bar { margin: 1.2rem 0; padding: 10px 14px; background: rgba(200,169,110,.05); border-left: 2px solid var(--accent-dim); border-radius: 0 var(--radius) var(--radius) 0; font-size: 12px; color: var(--text-muted); font-family: var(--mono); line-height: 1.5; }
+  .add-section { margin-top: 1.5rem; padding-top: 1.5rem; border-top: .5px solid var(--border); }
+  .add-label { font-size: 11px; font-family: var(--mono); color: var(--text-muted); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 10px; }
+  .add-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+  input[type="text"] { background: var(--surface); border: .5px solid var(--border); border-radius: var(--radius); color: var(--text); font-family: var(--sans); font-size: 14px; padding: 10px 12px; width: 100%; outline: none; transition: border-color .15s; }
   input[type="text"]:focus { border-color: var(--accent-dim); }
   input[type="text"]::placeholder { color: var(--text-dim); }
-
-  .btn-add {
-    width: 100%;
-    background: rgba(200, 169, 110, 0.1);
-    border: 0.5px solid var(--accent-dim);
-    border-radius: var(--radius);
-    color: var(--accent);
-    font-family: var(--mono);
-    font-size: 13px;
-    padding: 10px;
-    cursor: pointer;
-    transition: all 0.15s;
-    margin-top: 4px;
-    letter-spacing: 0.05em;
-  }
-
-  .btn-add:hover { background: rgba(200, 169, 110, 0.18); }
-  .btn-add:active { transform: scale(0.98); }
-
-  .count {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--text-dim);
-    text-align: right;
-    margin-top: 1rem;
-  }
-
-  @media (max-width: 480px) {
-    #app { padding: 1.5rem 1rem; }
-    .entry { grid-template-columns: 1fr 30px 80px; gap: 8px; }
-  }
+  .btn-add { width: 100%; background: var(--accent-bg); border: .5px solid var(--accent-dim); border-radius: var(--radius); color: var(--accent); font-family: var(--mono); font-size: 13px; padding: 10px; cursor: pointer; transition: all .15s; margin-top: 4px; }
+  .btn-add:hover { background: rgba(200,169,110,.18); }
+  .count { font-family: var(--mono); font-size: 11px; color: var(--text-dim); text-align: right; margin-top: 1rem; }
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 100; align-items: center; justify-content: center; }
+  .modal-overlay.show { display: flex; }
+  .modal { background: var(--surface); border: .5px solid var(--border); border-radius: 12px; padding: 1.5rem; max-width: 300px; width: 90%; text-align: center; }
+  .modal-title { font-size: 15px; margin-bottom: .5rem; }
+  .modal-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 1.5rem; font-family: var(--mono); }
+  .modal-actions { display: flex; gap: 8px; justify-content: center; }
+  .btn-confirm-del { background: var(--danger-bg); border: .5px solid var(--danger); border-radius: var(--radius); color: var(--danger); font-family: var(--mono); font-size: 13px; padding: 8px 20px; cursor: pointer; }
+  .btn-confirm-cancel { background: none; border: .5px solid var(--border); border-radius: var(--radius); color: var(--text-muted); font-family: var(--mono); font-size: 13px; padding: 8px 20px; cursor: pointer; }
+  @media (max-width: 480px) { #app { padding: 1.5rem 1rem 3rem; } .entry { grid-template-columns: 1fr 24px 88px 56px; gap: 6px; padding: 8px 10px; } }
 </style>
 </head>
 <body>
-
-<!-- PIN SCREEN -->
 <div id="pin-screen">
   <div class="logo">Expat Advisor MX</div>
   <div class="pin-title">Glosario Narrador</div>
   <div class="pin-sub">Ingresa tu PIN para continuar</div>
   <div class="pin-dots">
-    <div class="dot" id="d0"></div>
-    <div class="dot" id="d1"></div>
-    <div class="dot" id="d2"></div>
-    <div class="dot" id="d3"></div>
+    <div class="dot" id="d0"></div><div class="dot" id="d1"></div>
+    <div class="dot" id="d2"></div><div class="dot" id="d3"></div>
   </div>
   <div class="numpad">
-    <div class="key" onclick="pressKey('1')">1</div>
-    <div class="key" onclick="pressKey('2')">2</div>
-    <div class="key" onclick="pressKey('3')">3</div>
-    <div class="key" onclick="pressKey('4')">4</div>
-    <div class="key" onclick="pressKey('5')">5</div>
-    <div class="key" onclick="pressKey('6')">6</div>
-    <div class="key" onclick="pressKey('7')">7</div>
-    <div class="key" onclick="pressKey('8')">8</div>
-    <div class="key" onclick="pressKey('9')">9</div>
+    <div class="key" onclick="pressKey('1')">1</div><div class="key" onclick="pressKey('2')">2</div><div class="key" onclick="pressKey('3')">3</div>
+    <div class="key" onclick="pressKey('4')">4</div><div class="key" onclick="pressKey('5')">5</div><div class="key" onclick="pressKey('6')">6</div>
+    <div class="key" onclick="pressKey('7')">7</div><div class="key" onclick="pressKey('8')">8</div><div class="key" onclick="pressKey('9')">9</div>
     <div class="key del" onclick="deleteKey()">← del</div>
     <div class="key zero" onclick="pressKey('0')">0</div>
   </div>
   <div class="pin-error" id="pin-error"></div>
 </div>
 
-<!-- MAIN APP -->
 <div id="app">
   <div class="app-header">
     <div>
       <div class="app-title">Glosario narrador</div>
       <div class="app-sub">expat advisor mx / colmena</div>
     </div>
-    <div class="version-badge">v1.1</div>
+    <div class="version-badge">v1.2</div>
   </div>
-
+  <div class="export-bar">
+    <button class="btn-export" onclick="exportarGlosario()">⬆ exportar todo</button>
+    <span class="copy-feedback" id="copy-feedback">✓ copiado al portapapeles</span>
+  </div>
   <div class="list" id="glosario-list"></div>
-
-  <div class="rule-bar">
-    EA / GH / VC / SB / PI → siempre en mayúsculas<br>aunque el narrador los dicte en minúsculas
-  </div>
-
+  <div class="rule-bar">EA / GH / VC / SB / PI → siempre en mayúsculas<br>aunque el narrador los dicte en minúsculas</div>
   <div class="add-section">
     <div class="add-label">+ Agregar código</div>
     <div class="add-grid">
@@ -357,13 +123,24 @@
     <input type="text" id="nueva-nota" placeholder="Nota (opcional)" style="margin-bottom:8px;" />
     <button class="btn-add" onclick="agregarCodigo()">+ agregar</button>
   </div>
-
   <div class="count" id="contador"></div>
+</div>
+
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <div class="modal-title">¿Eliminar entrada?</div>
+    <div class="modal-sub" id="modal-sub"></div>
+    <div class="modal-actions">
+      <button class="btn-confirm-cancel" onclick="cerrarModal()">cancelar</button>
+      <button class="btn-confirm-del" onclick="confirmarEliminar()">eliminar</button>
+    </div>
+  </div>
 </div>
 
 <script>
 const PIN = '1434';
 let entrada = '';
+let pendingDeleteIdx = null;
 
 const glosarioBase = [
   { termino: 'prompt', codigo: 'PRT', nota: 'el narrador pone "Trump"' },
@@ -390,45 +167,37 @@ function pressKey(k) {
   actualizarDots();
   if (entrada.length === 4) verificarPin();
 }
-
 function deleteKey() {
-  entrada = entrada.slice(0, -1);
+  entrada = entrada.slice(0,-1);
   actualizarDots();
   document.getElementById('pin-error').textContent = '';
 }
-
 function actualizarDots() {
-  for (let i = 0; i < 4; i++) {
-    const d = document.getElementById('d' + i);
-    d.classList.remove('filled', 'error');
+  for (let i=0;i<4;i++) {
+    const d = document.getElementById('d'+i);
+    d.classList.remove('filled','error');
     if (i < entrada.length) d.classList.add('filled');
   }
 }
-
 function verificarPin() {
   if (entrada === PIN) {
     document.getElementById('pin-screen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
     renderLista();
   } else {
-    for (let i = 0; i < 4; i++) {
-      const d = document.getElementById('d' + i);
-      d.classList.remove('filled');
-      d.classList.add('error');
+    for (let i=0;i<4;i++) {
+      document.getElementById('d'+i).classList.remove('filled');
+      document.getElementById('d'+i).classList.add('error');
     }
     document.getElementById('pin-error').textContent = 'PIN incorrecto';
-    setTimeout(() => {
-      entrada = '';
-      actualizarDots();
-      document.getElementById('pin-error').textContent = '';
-    }, 900);
+    setTimeout(() => { entrada=''; actualizarDots(); document.getElementById('pin-error').textContent=''; }, 900);
   }
 }
 
 function renderLista() {
   const list = document.getElementById('glosario-list');
   list.innerHTML = '';
-  datos.forEach(item => {
+  datos.forEach((item, idx) => {
     const el = document.createElement('div');
     el.className = 'entry';
     el.innerHTML = `
@@ -438,24 +207,86 @@ function renderLista() {
       </div>
       <div class="arrow">→</div>
       <div class="code-pill">${item.codigo}</div>
-    `;
+      <div class="entry-actions">
+        <button class="btn-icon" title="Editar" onclick="iniciarEdicion(${idx})">✎</button>
+        <button class="btn-icon del-btn" title="Eliminar" onclick="pedirEliminar(${idx})">✕</button>
+      </div>`;
     list.appendChild(el);
   });
   document.getElementById('contador').textContent = `${datos.length} códigos registrados`;
 }
 
+function iniciarEdicion(idx) {
+  const entries = document.querySelectorAll('.entry');
+  const el = entries[idx];
+  const item = datos[idx];
+  el.classList.add('editing');
+  el.innerHTML = `
+    <div class="edit-inputs">
+      <input type="text" id="et-${idx}" value="${item.termino}" placeholder="Término" />
+      <input type="text" id="ec-${idx}" value="${item.codigo}" placeholder="Código" />
+      <input type="text" id="en-${idx}" value="${item.nota}" placeholder="Nota (opcional)" class="full" />
+      <div class="edit-actions">
+        <button class="btn-cancel" onclick="renderLista()">cancelar</button>
+        <button class="btn-save" onclick="guardarEdicion(${idx})">guardar</button>
+      </div>
+    </div>`;
+  document.getElementById(`et-${idx}`).focus();
+}
+
+function guardarEdicion(idx) {
+  const termino = document.getElementById(`et-${idx}`).value.trim();
+  const codigo  = document.getElementById(`ec-${idx}`).value.trim();
+  const nota    = document.getElementById(`en-${idx}`).value.trim();
+  if (!termino || !codigo) return;
+  datos[idx] = { termino, codigo, nota };
+  guardar(); renderLista();
+}
+
+function pedirEliminar(idx) {
+  pendingDeleteIdx = idx;
+  document.getElementById('modal-sub').textContent = datos[idx].termino + ' → ' + datos[idx].codigo;
+  document.getElementById('modal-overlay').classList.add('show');
+}
+function cerrarModal() { pendingDeleteIdx = null; document.getElementById('modal-overlay').classList.remove('show'); }
+function confirmarEliminar() {
+  if (pendingDeleteIdx === null) return;
+  datos.splice(pendingDeleteIdx, 1);
+  guardar(); cerrarModal(); renderLista();
+}
+
 function agregarCodigo() {
   const termino = document.getElementById('nuevo-termino').value.trim();
-  const codigo = document.getElementById('nuevo-codigo').value.trim().toUpperCase();
-  const nota = document.getElementById('nueva-nota').value.trim();
+  const codigo  = document.getElementById('nuevo-codigo').value.trim();
+  const nota    = document.getElementById('nueva-nota').value.trim();
   if (!termino || !codigo) return;
-  datos.push({ termino, codigo, nota });
-  localStorage.setItem('glosario-rolo', JSON.stringify(datos));
-  renderLista();
+  const existe = datos.findIndex(d => d.termino.toLowerCase() === termino.toLowerCase());
+  if (existe !== -1) {
+    if (!confirm(`"${termino}" ya existe. ¿Sobreescribir?`)) return;
+    datos[existe] = { termino, codigo, nota };
+  } else {
+    datos.push({ termino, codigo, nota });
+  }
+  guardar(); renderLista();
   document.getElementById('nuevo-termino').value = '';
   document.getElementById('nuevo-codigo').value = '';
   document.getElementById('nueva-nota').value = '';
 }
+
+function exportarGlosario() {
+  const lineas = datos.map(d => {
+    const nota = d.nota ? `  (${d.nota})` : '';
+    return `${d.termino} → ${d.codigo}${nota}`;
+  });
+  const texto = '=== GLOSARIO NARRADOR — EXPAT ADVISOR MX ===\n\n' + lineas.join('\n') + `\n\n[${datos.length} códigos / v1.2]`;
+  navigator.clipboard.writeText(texto).then(() => {
+    const fb = document.getElementById('copy-feedback');
+    fb.classList.add('show');
+    setTimeout(() => fb.classList.remove('show'), 2200);
+  }).catch(() => { prompt('Copia este texto:', texto); });
+}
+
+function guardar() { localStorage.setItem('glosario-rolo', JSON.stringify(datos)); }
 </script>
 </body>
 </html>
